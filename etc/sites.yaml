@@ -1,0 +1,10 @@
+---
+rootproperty: none
+fakeisp.virt:
+  docroot: /pub/www
+  user: hosting
+  passwd: 00onlineFTP
+  basename_re: /^fakeisp_\d{4}-\d{2}-\d{2}_\w+\.\w{3}$/
+  dirname_re: /^\w+$/
+  max_file_size: 25000
+---

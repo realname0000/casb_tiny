@@ -1,0 +1,13 @@
+--- 
+rootproperty: none
+audio_uploads:
+  compulsory_new_directory: rule
+  file_has_mp3_name: rule
+  file_has_mp3_content: rule
+  max_subdir_depth: 0
+image_uploads:
+  compulsory_new_directory: rule
+  file_has_jpeg_name: rule
+  file_has_jpeg_content: rule
+  max_subdir_depth: 0
+---

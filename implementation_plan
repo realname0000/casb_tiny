@@ -1,0 +1,29 @@
+1. authenticate user identity and bind to a session
+   see perl dancer upload -  https://perlmaven.com/uploading-files-with-dancer2
+   want TLS
+   cater for Openid
+      https://metacpan.org/search?q=openid
+      (https://metacpan.org/search?q=oauth is authz not authn)
+
+2. record upload and similar activity in the CASB
+   write to spool directory
+
+3. flexible policy to allow
+   user/role/host definitions in YAML files
+
+4. as permitted by policy deploy changes
+   perl module for FTP (several available)
+
+5. logging
+   files or syslog?
+
+6. optional triggers:
+   plugin library and event category
+
+--------
+Gartner has defined the four pillars of CASB as:
+    Visibility
+    Data security
+    Compliance
+    Threat Prevention
+Can I explain how this tool meets those "pillars"?

@@ -1,0 +1,39 @@
+A cheap web hosting service holds files that can
+be updated using FTP with user/pass.  To share the
+service with multiple people you do not want them
+knowing the password.  You also want them to keep
+to some policy you can define.  A broker could meet
+these requirements.
+
+1. authenticate user identity and bind to a session
+
+2. record upload and similar activity in the CASB
+
+3. flexible policy to allow
+   - uploads only (no delete/modify)
+   - access only under certain parts of the doc tree
+   - constrain depth of subdirectories
+   - modify/delete files change by same person
+   - check file name properties
+   - check file content properties
+   - account and policy expiry
+
+4. as permitted by policy copy changes from the session
+   to the web
+   - FTP user/pass for basic web hosting
+   - local copy for a VPS
+
+5. logging
+
+6. optional triggers:
+   - recreate HTML indexing data files
+   - optional tagging on web (marking newest content)
+   - new backup
+   - email from broker to user when action performed
+
+--------
+Gartner has defined the four pillars of CASB as:
+    Visibility
+    Data security
+    Compliance
+    Threat Prevention
