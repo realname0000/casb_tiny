@@ -1,0 +1,15 @@
+use strict;
+use warnings;
+
+use Web::CASB_tiny;
+use Test::More tests => 2;
+use Plack::Test;
+use HTTP::Request::Common;
+
+my $app = Web::CASB_tiny->to_app;
+is( ref $app, 'CODE', 'Got app' );
+
+my $test = Plack::Test->create($app);
+my $res  = $test->request( GET '/' );
+
+ok( $res->is_success, '[GET /] successful' );

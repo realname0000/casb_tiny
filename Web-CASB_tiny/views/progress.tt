@@ -1,0 +1,7 @@
+Uploaded
+<hr />
+<h2><% list %></h2>
+<hr />
+<a href='/upload'>Another upload ?</a>
+<br />
+<a href='/finish'>Finish ?</a>";

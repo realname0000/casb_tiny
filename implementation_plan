@@ -1,12 +1,12 @@
 1. authenticate user identity and bind to a session
    see perl dancer upload -  https://perlmaven.com/uploading-files-with-dancer2
-   want TLS
+   want TLS (provided by OpenBSD httpd)
    cater for Openid
       https://metacpan.org/search?q=openid
       (https://metacpan.org/search?q=oauth is authz not authn)
 
 2. record upload and similar activity in the CASB
-   write to spool directory
+   write to spool directory - mostly done
 
 3. flexible policy to allow
    user/role/host definitions in YAML files

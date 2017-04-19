@@ -1,0 +1,5 @@
+#!/bin/sh
+
+export TMPDIR=/home/ant/Web-CASB_tiny/tmp
+
+plackup -l  192.168.1.1:9090    bin/app.psgi            
