@@ -29,6 +29,11 @@ foreach my $spool (qw(uploads staging rejects)) {
     die("Lacking spool directory $::maindir/$spool") if (! -d $spool);
 }
 
+sub process_upload {
+    my ($dirname, $site) = @_;
+    die("XXX read the access.yaml data for this site");
+}
+
 # read applicable policy
 # then examine the files in bot_spool for conformity to policy
 # and if all ok process with the upload module
@@ -37,7 +42,6 @@ sub process_staging {
     chdir($::maindir) or die("chdir $!");
     chdir('staging') or die("chdir $!");
     LOOKS_OK: while (1) {
-        printf("Studying %s\n", $dirname);
         # read control file _.txt
         open(my $cf, '<', "$dirname/_.txt") or last LOOKS_OK;
         my @cfcontent=<$cf>;
@@ -55,7 +59,7 @@ sub process_staging {
             } elsif ($line_o_text =~ /^site:\s+(.*)$/) {
                 $site = $1;
             } else {
-                printf("LINE: %s\n", $line_o_text);
+                printf("LINE: %s\n", $line_o_text) if ('END' ne $line_o_text);
             }
         }
         # list contents and check against control
@@ -73,10 +77,7 @@ sub process_staging {
 
         # obtain user/role/site data
         my $policy = Policy::CASB_tiny->new($user);
-        printf("Created a policy: %s\n", $policy);
-        $policy->display();
         $policy->discover_options();
-        $policy->display();
         $policy->choose_option($role .'@'. $site);
         $policy->display();
 
@@ -84,17 +85,19 @@ sub process_staging {
         foreach my $k (keys %fnames_expected) {
             if (!$policy->test_file($k)) {
                 printf("Policy check failed for file %s\n", $k);
+                my $error_aref = $policy->get_errors();
+                open(my $err, '>', $dirname."/_.err") or die("open $!");
+                printf($err "%s\n", join ("\n", @{$error_aref}));
+                close($err);
                 last LOOKS_OK;
             }
         }
 
-
         # upload by suitable means (e.g. FTP)
-        # rm from staging
-          # system({'rm'} 'rm', '-rf', $ufn);
-          # my $rcrm = $?;
-          # die("problem running rm: $rcrm $!") if ($rcrm);
-        return;
+        process_upload($dirname, $site);
+
+        system({'rm'} 'rm', '-rf', $dirname);
+        return; # normal completion
     }
    #  OR move to rejects
       rename($dirname, "../rejects/$dirname".'_at_'.scalar time);
@@ -153,13 +156,12 @@ my %age = (uploads => 7200, staging => 7200, rejects => 604800, tmp => 3600);
 foreach my $spool (keys %age) {
     chdir($::maindir) or die("chdir $!");
     chdir($spool) or die("chdir $!");
-    printf("Spool: %s age %d\n", $spool, $age{$spool});
     # remove stuff above the specified age
     opendir(my $dh, '.') or next;
-    my @dirnames = grep {/^\d+$/} readdir($dh);
+    my @dirnames = readdir($dh);
     closedir($dh) or next;
     foreach my $d (@dirnames) {
-        if ($d =~ /^(\d+)$/) {
+        if ($d =~ /^(\d\w+\d)$/) {
             my $ud = $1;
             my $sb = lstat($ud);
             next unless S_ISDIR($sb->mode);

@@ -1,0 +1,10 @@
+The access.yaml file should be readable
+by the broker but not by the web application.
+
+The site name as used in the title of each section need
+not be the same as the address so you could provide
+different sections with different content referring to
+the same site (e.g. different FTP accounts).
+
+Protocol is included because this may be extended beyond
+the first protocol being used which is FTP.

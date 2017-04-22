@@ -3,12 +3,28 @@ use strict;
 use warnings;
 use Dancer2;
 use Digest::SHA 'sha256_hex';
+use FindBin '$RealBin';
+use YAML::Tiny;
 
 our $VERSION = '0.1';
 
 get '/casb' => sub {
     template 'index' => { 'title' => 'Web::CASB_tiny' };
 };
+
+BEGIN {
+    my $maindir=$RealBin;
+    $maindir =~ s{/bin/?$}{};
+    printf("MAIN DIR is -%s-\n", $maindir);
+    if ($maindir =~ m{^(/home/\w+/Web-CASB_tiny|/opt/webapp/casb_tiny)$}) {
+        $::maindir = $1; # untainted
+    } else {
+      die("bad --$maindir--");
+    }
+}
+
+use lib "$::maindir/lib";
+use Policy::CASB_tiny;
 
 # show login intro
 # login openid
@@ -17,9 +33,27 @@ get '/casb' => sub {
 # finalise and logoff
 
 get '/casb/login' => sub {
+    # XXX Get actual authentication from openid
     session('authn_user' => 'smithj');
-    session('role' => 'audio_uploads');
-    session('site' => 'fakeisp.local');
+
+    # Pick available roles from YAML and give the user
+    # a choice between them if more than one.
+    my $policy = Policy::CASB_tiny->new( session('authn_user') );
+    $policy->discover_options();
+    my @options = $policy->get_role_options();
+    if    (0 == @options ) {
+        # Fail
+        return template 'no_role.tt' => { user => session('authn_user') };
+    } elsif (1 == @options ) {
+        # No choice, use this role
+        if ($options[0] =~ /^(\w+)\@(\w+\.?\w+)$/) {
+           session('role' => $1);
+           session('site' => $2);
+           redirect '/casb/upload';
+        }
+    }
+    # XXX Need user choice probably by radio button
+    # template $some_stuff_to_be_decided;
     redirect '/casb/upload';
 };
 
@@ -30,11 +64,16 @@ get '/casb/logout' => sub {
 
 get '/casb/upload' => sub {
     my $u = session('authn_user');
-    $u //= "not_logged_in";
+    $u //= "not logged in";
+    my $r = session('role');
+    $r //= "role not found";
+    my $s = session('site');
+    $s //= "site not found";
+    #
     my $a = int rand(1_000_000_000);
     my $b = "some string - should come from config";
     session('csrf' => sha256_hex($a . $b));
-    template 'upload.tt' => { 'csrf' => session('csrf'), user => $u };
+    template 'upload.tt' => { 'csrf' => session('csrf'), user => $u , role => $r, site => $s };
 };
 
 post '/casb/upload' => sub {
