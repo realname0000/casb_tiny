@@ -1,0 +1,7 @@
+---
+rootproperty: none
+fakeisp.local:
+  docroot: /pub/www
+  user: hosting
+  passwd: 00onlineFTP
+---

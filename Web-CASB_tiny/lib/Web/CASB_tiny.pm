@@ -18,7 +18,7 @@ get '/casb' => sub {
 
 get '/casb/login' => sub {
     session('authn_user' => 'smithj');
-    session('role' => 'audio_upload');
+    session('role' => 'audio_uploads');
     session('site' => 'fakeisp.local');
     redirect '/casb/upload';
 };

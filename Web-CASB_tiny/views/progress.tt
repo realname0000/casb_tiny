@@ -1,7 +1,7 @@
-Uploaded
+<h1>Uploaded</h1>
 <hr />
 <h2><% list %></h2>
 <hr />
 <a href='/casb/upload'>Another upload ?</a>
 <br />
-<a href='/casb/finish'>Finish ?</a>";
+<a href='/casb/finish'>Finish ?</a>
