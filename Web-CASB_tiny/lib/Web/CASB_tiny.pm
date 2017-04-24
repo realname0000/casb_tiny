@@ -52,9 +52,29 @@ get '/casb/login' => sub {
            redirect '/casb/upload';
         }
     }
-    # XXX Need user choice probably by radio button
-    # template $some_stuff_to_be_decided;
-    redirect '/casb/upload';
+    # user choice between possible roles
+    my $template_string = '<h2>Choose Role</h2><form action="/casb/role" method="POST" enctype="multipart/form-data">';
+    foreach my $opt (sort @options) {
+        $template_string = $template_string . '<br /><input type="submit" name="role" value="' .$opt. '">';
+    }
+    $template_string .= '</form>';
+    template(\$template_string, {});
+};
+
+post '/casb/role' => sub {
+    # Should not come here if role is already set.
+    my $oldrole = session('role');
+    if (defined($oldrole)) {
+        redirect '/casb/upload';
+    }
+    #
+    my $newrole = request->{body_parameters}->{role};
+    if (defined($newrole) && ($newrole =~ /^(\w+)\@(\w+\.?\w+)$/)) {
+        session(role => $1);
+        session(site => $2);
+        redirect '/casb/upload';
+    }
+    redirect '/casb/login';
 };
 
 get '/casb/logout' => sub {

@@ -107,6 +107,18 @@ sub dirname_re {
     return 1;
 }
 
+sub file_has_jpeg_name {
+    my ($self,$file) = @_;
+    return 1 if ($file =~ /\.jpe?g$/);
+    $self->new_error("Filename $file not *.jpeg nor *.jpg");
+    return;
+}
+
+sub file_has_jpeg_content {
+    my ($self,$parm) = @_;
+    warn("no check for file_has_jpeg_content");
+}
+
 sub file_has_mp3_content {
     my ($self,$parm) = @_;
     warn("no check for file_has_mp3_content");

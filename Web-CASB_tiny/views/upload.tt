@@ -1,6 +1,6 @@
-<h1><% user %></h1>
-<h2><% role %></h2>
-<h2><% site %></h2>
+<h1>User: <% user %></h1>
+<h2>Role: <% role %></h2>
+<h2>Site: <% site %></h2>
 <br />
 <form action="/casb/upload" method="POST" enctype="multipart/form-data">
 <input type="file" name="file">

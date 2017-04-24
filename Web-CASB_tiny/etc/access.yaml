@@ -2,8 +2,8 @@
 rootproperty: none
 fakeisp.local:
   protocol: ftp
-  address: fakeisp.local
+  address: localhost
   user: hosting
   passwd: 00onlineFTP
-  docroot: /pub/www
+  docroot: /home/hosting/pub/www
 ---

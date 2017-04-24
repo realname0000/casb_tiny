@@ -4,11 +4,13 @@ use strict;
 use warnings;
 $ENV{PATH}='/bin:/usr/bin';
 
-use FindBin '$RealBin';
-use File::stat;
-use Fcntl ':mode';
-use YAML::Tiny;
 use Data::Dumper 'Dumper';
+use Fcntl ':mode';
+use File::stat;
+use Net::UploadMirror;
+use YAML::Tiny;
+
+use FindBin '$RealBin';
 
 BEGIN {
     my $maindir=$RealBin;
@@ -31,7 +33,34 @@ foreach my $spool (qw(uploads staging rejects)) {
 
 sub process_upload {
     my ($dirname, $site) = @_;
-    die("XXX read the access.yaml data for this site");
+    my $access_yaml = YAML::Tiny->read($::maindir.'/etc/access.yaml');
+    my $access_data  = $access_yaml->[0]->{$site};
+
+    if (defined($access_data->{protocol}) && ('ftp' eq $access_data->{protocol})) {
+        # data from YAML config files needs to be untainted
+        foreach my $taintvar ($access_data->{address}, $access_data->{user},
+                              $access_data->{passwd}, $access_data->{docroot}) {
+            if ($taintvar =~ m{^([\w/]+)$}) {
+                $taintvar = $1; # aliased
+            }
+        }
+        #
+        my $um = Net::UploadMirror->new(
+            ftpserver       => "$access_data->{address}", # hostname or IP
+            user            => "$access_data->{user}",
+            pass            => "$access_data->{passwd}",
+            localdir        => "$dirname",
+            remotedir       => "$access_data->{docroot}",
+            debug           => 1, # 1 for yes, 0 for no
+            timeout         => 250, # default 30
+            delete          => 'disabled'
+            );
+        unlink("$dirname/_.txt");
+        unlink("lastmodified_local");
+        my $rc = $um->Upload(); # returns 0 even after failure, e.g. wrong pass
+        printf("FTP module returned %d\n", $rc);
+        unlink("lastmodified_local");
+    }
 }
 
 # read applicable policy
@@ -95,7 +124,6 @@ sub process_staging {
 
         # upload by suitable means (e.g. FTP)
         process_upload($dirname, $site);
-
         system({'rm'} 'rm', '-rf', $dirname);
         return; # normal completion
     }

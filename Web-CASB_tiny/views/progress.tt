@@ -3,5 +3,7 @@
 <h2><% list %></h2>
 <hr />
 <a href='/casb/upload'>Another upload ?</a>
-<br />
+<p />
 <a href='/casb/finish'>Finish ?</a>
+<p />
+<a href='/casb/logout'>Logout ?</a>

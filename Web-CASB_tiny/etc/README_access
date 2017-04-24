@@ -1,5 +1,6 @@
 The access.yaml file should be readable
-by the broker but not by the web application.
+by the broker but not by the web application
+because it contains an FTP password per site.
 
 The site name as used in the title of each section need
 not be the same as the address so you could provide
